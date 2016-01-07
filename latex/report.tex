@@ -15,8 +15,6 @@
     basicstyle=\fontsize{6}{5}\ttfamily,
     showstringspaces=false,
     breaklines=true,
-    %frame=lines,
-    %backgroundcolor=\color{background},
     literate=
      *{0}{{{\color{numb}0}}}{1}
       {1}{{{\color{numb}1}}}{1}
@@ -40,19 +38,15 @@
 
 \DeclareFontFamily{\encodingdefault}{\ttdefault}{\hyphenchar\font=`\/}
 
-\pretitle{
-    \begin{center}
-        \includegraphics[width=10cm, height=10cm, keepaspectratio]{epfl.png}\\[\bigskipamount]
-}
-\posttitle{\end{center}}
-
-\title{User Privacy Behavior Change in Instagram} 
-\author{Romain \textsc{Choukroun}} 
+\title{\Huge User Privacy Behavior Change in Instagram} 
 \date{\today}
+\author{Romain \textsc{Choukroun}} 
 
 \begin{document}
-
-\maketitle
+\begin{center}
+      \includegraphics[width=10cm, height=10cm, keepaspectratio]{epfl.png}\\[\bigskipamount]
+\end{center}
+{\let\newpage\relax\maketitle}
 
 \newpage
 \tableofcontents
