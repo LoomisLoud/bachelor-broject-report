@@ -1,0 +1,71 @@
+Abstract:
+    Privacy has always been and always will be a cornerstone of society, maybe first layed out by Aristotle as the "private" sphere opposed to the "public" sphere. 
+    Through history, the concept of privacy has not really changed, it still is about collecting information, disclosing them, intrusion in personnal spaces etc. What has changed is the domain on which it applies, in fact, with the birth of so many social networks and media sharing platforms, the mere concept of privacy is somewhat overshadowed by the growing interest in said technologies for the grand public.
+    The users seem to be less concerned about privacy matters when using such tools and platforms. This privacy-related behavior is not linear but is influenced by several factors. These factors are what we focused on during this project.
+    As one of the most used media sharing networks, instagram was an obvious choice for that purpose. More precisely, we want to take a look at which factors can affect each user, and to what extent. Will the behavior of users change depending on who they start to follow ? On the content they consume ? On the overall trend of their feed ?
+    In order to study such a behavior, we split the project into two tasks. The first of which was to build a tool to continuously collect instagram posts by users. While the second was a photo analysis tool capable of understanding the photo content opposed to just the context set by the different tags, titles, comments. It is the latter that I will elaborate on during this report.
+
+Introduction
+    Motivations (Why):
+        The average instagram user will most likely be a young person with a relatively small understanding of privacy-related issues concerning his/her content or his/her behavior, hence the importance of raising awareness to the public.
+
+    What:
+        The idea behind the tool I wrote is to gather as much information as possible about a picture, an image or multiple of them fed as input and output said information in a JSON format. We focus on a certain number of features to get a good grasp of of the context in which the picture was taken. The following graph underlines these features: REFERENCE TO NEXT GRAPH CONTAINING A PICTURE, SET OF FEATURES FROM IT, FULL FEATURES LIST AND CORRESPONDING JSON OUTPUT.
+    
+    Intro to how:
+        As the aim of the project is analyzing privacy-related behavior of users, and not refining computer vision techniques, we did not develop the corresponding analysis tools from scratch, but used existing open source frameworks and machine learning models.
+        
+Code Architecture:
+    Early choices:
+        The most obvious choice of language if you want to run a machine learning heavy program as the backend for a service is python. In fact, a lot of machine learning open source framework or projects are written in/or have an interface to python. Which makes it easy to build a tool using all of these parts with almost only one language.
+        Moreover, the Caffe framework (LINK TO CAFFE) has been our go-to deep learning tool when going about scene detection, object recognition and a part of age and gender.
+        Concerning the other features, we found a lot of exciting open source work on github like the Pornographic images jacking algorithm (PIJA) (PIJA LINK GITHUB) which analyses the pixels of a picture in order to classify it as nudity or not. For face detection we used the opencv wrapper in python using Haar Cascades (see http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_objdetect/py_face_detection/py_face_detection.html)
+        Around the end of 2015, Google released TensorFlow which we implemented for scenes and objects considering their results were very accurate.
+        Some of the results of the age and gender models from Caffe were not convincing enough, so we decided to add the output from the OpenBiometrics age and gender classifiers.
+        And last but not least, the emotions detection was run from an amazing library found on github called clmtrackr.
+
+    Output:
+        In the following figure, you can see an image and its output. We chose the JSON format for the output as it's the most widely used and easy to parse format for human-readable data exchange. 
+        FIGURE OF PICTURE AND ITS OUTPUT IN JSON (Maybe another example with people)
+
+    Data storing:
+        As the project is about data collection and analysis, we needed a way to store results. MongoDB seemed like the perfect document-oriented database since it focuses on storing Objects in JSON documents. Using MongoDB through the PyMongo module for python, we can easily link the first part of the project (Data collection) with the second part (Data analysis) as well as maybe a future user interface. 
+        For the sake of privacy, JSONS obtained through running the web demo shall not be stored.
+
+Classifiers:
+    Each prediction is given as the output of a particular classifier, here are more details about these classifiers. We opted to run multiple classifiers for each category in order to have a wider array of predictions, hereby tightening the choices. Given an input, each classifier outputs a prediction for each of his own features which we then sort from most probable to least and select as much predictions as we want.
+    Scenes and objects:
+        All the scenes and objects classifiers are based on deep learning and use available pretrained models.
+        The ImageNet, Hybrid-CNN MIT and BVLC GoogleNet models are all caffe models found on the Model-Zoo at https://github.com/BVLC/caffe/wiki/Model-Zoo (Reference ?). While ImageNet and GoogleNet focus on the objects, the Hybrid-CNN is, as named, an hybrid between scenes and objects. Consequently, it will output predictions for both the objects and scenes. These predictions are then sorted and classified into two categories: the ones higher than a set threshold number separating the two and the others. 
+        Google then released their TensorFlow library that we implemented as the tensorflow classifier, which as you can see gives also great results on objects.
+        GRAPH OF RESULTS PER MODEL CONTAINING IMAGENET HYBRID GOOGLENET TENSORFLOW
+
+    Age and gender:
+        The output of an age and gender model is usually simple, a boolean to qualify the gender and an array of confidence concerning the age.
+        The last of the caffe models we used is called AgeGenderDeepLearning and is also available in the model zoo, it classifies the age and gender of a detected face using machine learning and a pretrained model.
+        OpenBiometrics is the other option concerning age and gender. It is also based on machine learning and OpenCV. We use the commandline interface through python in order to classify portrait.
+        The accuracy of each model is as follows:
+        GRAPH RESULTS PER MODEL CONTAINING CNN AGE GENDER AND OPENBR
+
+    Face detection:
+        We detect faces using OpenCV and a Haar Cascade file trained specifically for face detection, the output saves the same picture as the original file with a green rectangle surrounding the detected faces. The path to this output file is given in the JSON. 
+
+    Nudity:
+        Nudity detection is done through an open-source library found on github called PIJA first intended to prove that a malware could detect and steal homemade adult content from a remote machine. PIJA gave us good results in testing compared to other free libraries and being written in python, it was easy to implement into a building block of our tool. It is based on skin pixel detection using OpenCV, by first finding a skin mask after converting the input as a numpy array, and simply counting the proportion of skin pixels compared to non skin pixels.
+        [REFERENCE TO THEIR GITHUB OR THEIR TALK ?]
+
+    Emotions:
+        Concerning emotion detection, the really good clmtrackr javascript library found on github was an obvious choice. It works by tracking a facial model in a video or image and recording the coordinate position of each number as follows: [FACIAL NUMBERS MODEL ON THEIR GITHUB PAGE]
+        Their demo is pretty impressive [REFERENCE TO DEMO], which is what convinced us. Since the library is written in javascript we have to run it in a browser, thanks to the selenium WebDriver API we can run a headless browser in python with a webserver written in NodeJS from python too. 
+        So what the code does is start a simple NodeJS web server and then run the javascript needed to classify the emotions of the input into PhantomJS (WebDriver). We are then able to output the emotions as a JSON with, for now, four features: angry, happy, surprised, and sad with their own confidence level. If no face is found in the picture, each confidence level will be by default set to 0.
+
+Future work:
+    There is still a lot of work to be done, which is really exciting, but here are some of the most obvious optimizations. First of all, we need to add parallelization to the python code. In fact, performance is not the worst but running on a laptop CPU without any parallelization, and no GPU, it takes around 15 seconds to fully classify one image. This time should be reduced to around 1 second by parallel processing and multiprocessing in python. Since Google came out with TensorFlow, it might be needed to switch our models to it. It is also crucial to start working more on a better detection of faces, and maybe seperate the emotion classification of each detected face. We also have a web demo for the project [REFERENCE FOR THE DEMO] and need to optimize it more for concurrency. There should also be more flexibility in the use of the demo, make available the set of models to choose from and maybe refine the user interface. An activity model will be implemented soon, it is still in training on the LSIR cluster. 
+    Detecting activities will be a big part to do in order to better understand the context of a taken picture. A ton more features could be implemented to complete such a tool, like Image Captioning and Optical Character Recognition.
+
+Conclusion:
+    In this report, we presented you with an image analysis tool capable of classifying an input with a set of specific features in mind like the scenes, the emotions and much more. We hope that it will help the LSIR lab and the community to continue working on privacy-related issues, may they dissapear one after the other. With the work left to be done in the machine learning field, the accuracy of such predictions and classifications will not stop growing.
+
+Credits:
+
+References:

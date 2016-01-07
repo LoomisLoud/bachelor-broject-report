@@ -1,0 +1,17 @@
+\contentsline {section}{\numberline {1}Abstract}{3}
+\contentsline {section}{\numberline {2}Introduction}{4}
+\contentsline {subsection}{\numberline {2.1}Motivation}{4}
+\contentsline {subsection}{\numberline {2.2}Analyzing an input}{4}
+\contentsline {section}{\numberline {3}Code Architecture}{5}
+\contentsline {subsection}{\numberline {3.1}Early Choices}{5}
+\contentsline {subsection}{\numberline {3.2}Output}{6}
+\contentsline {subsection}{\numberline {3.3}Data Storing}{7}
+\contentsline {section}{\numberline {4}Classifiers}{7}
+\contentsline {subsection}{\numberline {4.1}Scenes and Objects}{7}
+\contentsline {subsection}{\numberline {4.2}Age and Gender}{7}
+\contentsline {subsection}{\numberline {4.3}Face Detection}{8}
+\contentsline {subsection}{\numberline {4.4}Nudity}{8}
+\contentsline {subsection}{\numberline {4.5}Emotions}{8}
+\contentsline {section}{\numberline {5}Future Work}{10}
+\contentsline {section}{\numberline {6}Conclusion}{10}
+\contentsline {section}{\numberline {7}Credits}{10}
