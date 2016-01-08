@@ -69,3 +69,14 @@ Conclusion:
 Credits:
 
 References:
+
+Models accuracy:
+Name            Top 1           Top 5
+ImageNet        0.567           0.795
+GoogleNet       0.687           0.890
+Hybrid-CNN      0.50            0.811
+TensorFLow      0.965           0.827
+
+Others https://github.com/BVLC/caffe/wiki/Models-accuracy-on-ImageNet-2012-val
+Hybrid CNN http://places.csail.mit.edu/places_NIPS14.pdf
+TensorFLow http://arxiv.org/abs/1512.00567
